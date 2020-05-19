@@ -6,7 +6,7 @@
   <div class="col-lg-6">
     <div class="box-element" id="form-wrapper">
       <form id="form">
-        <div id="user-inf">
+        <div id="user-info">
           <div class="form-field">
             <input required class="form-control" type="text" name="name" placeholder="Name..">
           </div>
@@ -41,6 +41,7 @@
     <br>
     <div class="box-element hidden" id="payment-info">
       <small>Paypal Options </small>
+      <button id="make-payment"> Make payment </button>
     </div>
   </div>
   <div class="col-lg-6">
@@ -71,10 +72,76 @@
   </div>
 </div>
 </div>
-<script typr='text/javascript'>
-      var shipping = {{order.shipping}}
+<script type='text/javascript'>
+      var shipping = '{{order.shipping}}'
+      var total = '{{order.get_cart_total}}'
       if (shipping == 'False'){
-        documente.getElementById('shipping-inf').innerHTML = ''
+        document.getElementById('shipping-info').innerHTML = ''
      }
-     </script>
+      if (user != 'AnonymousUser'){
+        // Verifica se o úsuario está logado
+        document.getElementById('user-info').innerHTML = ''
+      }
+      if(shipping == 'False' && user != 'AnonymousUser'){
+          //Ocultar o formulário inteiro se o ID do usuário estiver conectado e o envio estiver em fase
+          document.getElementById('form-wrapper').classList.add("hidden");
+          //Mostrar pagamento se o usuário conectado desejar comprar um item que não exija envio
+          document.getElementById('payment-info').classList.remove("hidden");
+      }
+
+      var form = document.getElementById('form')
+      form.addEventListener('submit', function(e){
+        e.preventDefault()
+        console.log('Form Submitted...')
+        document.getElementById('form-button').classList.add('hidden')
+        document.getElementById('payment-info').classList.remove('hidden')
+      })
+
+      document.getElementById('make-payment').addEventListener('click', function(e){
+        submitFormData()
+      })
+      function submitFormData(){
+        console.log('Payment button clicked')
+        var userFormData = {
+          'name':null,
+          'email':null,
+          'total':total,
+        }
+        var shippingInfo = {
+          'address':null,
+          'city':null,
+          'state':null,
+          'zipcode':null,
+          'country':'Brasil',
+        }
+        if(shipping != 'False'){
+          shippingInfo.address = form.address.value
+          shippingInfo.city = form.city.value
+          shippingInfo.state = form.state.value
+          shippingInfo.zipcode = form.zipcode.value
+         
+        }
+         if(user == 'AnonymousUser'){
+          userFormData.name = form.name.value
+          userFormData.email = form.email.value
+          
+        }
+        var url = '/process_order/'
+        fetch(url,{
+          method:'POST',
+          headers:{
+            'Content-Type':'application/Json',
+            "X-CSRFToken" : csrftoken,
+          },
+          body:JSON.stringify({'form': userFormData, 'shipping':shippingInfo
+          }),
+        })
+        .then((response) => response.json())
+        .then((data) => {
+          console.log('Success: ', data);
+          alert('Transaction completed');
+          window.location.href = "{% url 'store'%}"
+        })
+      }
+</script>
 {% endblock content %}
