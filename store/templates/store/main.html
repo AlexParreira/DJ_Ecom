@@ -9,7 +9,7 @@
 
   <link rel="stylesheet" type="text/css" href="{% static 'css/main.css'%}">
 
-  <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,minimum-scala=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,minimum-scale=1" />
 
    <script type='text/javascript'>
         var user = '{{request.user}}'
@@ -20,7 +20,7 @@
               var cookies = document.cookie.split(';');
               for (var i = 0; i < cookies.length; i++) {
                   var cookie = cookies[i].trim();
-                  // Does this cookie string begin with the name we want?
+                  // Essa sequência de cookies começa com o nome que queremos
                   if (cookie.substring(0, name.length + 1) === (name + '=')) {
                       cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
                       break;
@@ -30,6 +30,30 @@
           return cookieValue;
       }
       var csrftoken = getToken('csrftoken'); 
+
+      function getCookie(name){
+        //Split a sequência de cookies e obtenha todo o individual name = value em uma array
+        var cookieArr = document.cookie.split(';');
+
+        // loop junta o array de elementos
+        for(var i = 0; i < cookieArr.length; i++){
+          var cookiePair = cookieArr[i].split('=')
+          // Remove de espaço em branco no início do nome do cookie e compare-o com a sequência especificada
+          if (name == cookiePair[0].trim()){
+            //Decodifique o valor do cookie e retorne
+            return decodeURIComponent(cookiePair[1]);
+          }
+        }
+       
+        return null;
+      }
+      var cart = JSON.parse(getCookie('cart'))
+      if(cart == undefined){
+        cart = {}
+        console.log('Cart was created')
+        document.cookie = 'cart=' + JSON.stringify(cart) + ';domain=;path=/'
+      }
+      console.log('Cart: ', cart)
   </script>
 
 </head>
