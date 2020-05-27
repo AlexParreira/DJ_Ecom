@@ -11,8 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
-import dj_database_url
-
+import django_heroku
 
 from django.core.wsgi import get_wsgi_application
 from whitenoise.django import DjangoWhiteNoise
@@ -30,6 +29,7 @@ DEBUG = config('DEBUG', cast=bool)
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=lambda v: [
                        s.strip() for s in v.split(',')])
 
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Application definition
 
@@ -133,7 +133,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 # Activate Django-Heroku.
-
+django_heroku.settings(locals())
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "bootcamp.settings")
 
