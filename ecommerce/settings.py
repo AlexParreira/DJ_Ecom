@@ -8,7 +8,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
-
+import django_heroku
 from decouple import config
 from dj_database_url import parse as dburl
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -127,3 +127,5 @@ STATICFILES_DIRS = [
 MEDIA_URL = '/images/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
+# Activate Django-Heroku.
+django_heroku.settings(locals())
